@@ -1,16 +1,71 @@
-1. Markdown
-2. # RESTful API Activity - [Your Name]
-3. ## Best Practices Implementation
-4. **1. Environment Variables:**
-5. - Why did we put `BASE_URI` in `.env` instead of hardcoding it?
-6. - Answer: ...
-7. **2. Resource Modeling:**
-8. - Why did we use plural nouns (e.g., `/dishes`) for our routes?
-9. - Answer: ...
-10. **3. Status Codes:**
-11. - When do we use `201 Created` vs `200 OK`?
-12. - Why is it important to return `404` instead of just an empty array or a generic error?
-13. - Answer: ...
-14.
-15. **4. Testing:**
-16. - (Paste a screenshot of a successful GET request here)
+# RESTful API Activity - Joel Pariño
+
+## Best Practices Implementation
+
+### 1. Environment Variables
+- **Why did we put `BASE_URI` in `.env` instead of hardcoding it?**  
+  **Answer:**  
+  We use `.env` so configuration values like `BASE_URI` and `PORT` can be changed without editing the source code. This keeps the code cleaner, easier to deploy in different environments (development vs production), and prevents mistakes from hardcoding URLs in multiple places.
+
+### 2. Resource Modeling
+- **Why did we use plural nouns (e.g., `/dishes`) for our routes?**  
+  **Answer:**  
+  Plural nouns represent a collection of resources. For example, `/dishes` means “all dishes,” and `/dishes/:id` means “one dish from the collection.” This follows REST conventions and makes endpoints predictable and consistent.
+
+### 3. Status Codes
+- **When do we use `201 Created` vs `200 OK`?**  
+  **Answer:**  
+  We use **`201 Created`** when the request successfully creates a new resource (e.g., `POST /dishes`). We use **`200 OK`** when the request successfully retrieves or updates data (e.g., `GET /dishes`, `GET /dishes/:id`, `PUT /dishes/:id`).
+
+- **Why is it important to return `404` instead of just an empty array or a generic error?**  
+  **Answer:**  
+  `404 Not Found` clearly tells the client that the requested resource does not exist (e.g., dish ID not found). This is better than returning an empty array because it avoids confusion and helps developers or client applications handle errors properly.
+
+
+  
+## Activity 3: Advanced Data Modeling
+
+### 1. Why did I choose to Embed the Reviews?
+- Because reviews are short and belong strictly to that dish.
+- Reviews are not used independently from the dish.
+
+### 2. Why did I choose to Reference the Chef?
+- Because a Chef exists even if they aren't cooking.
+- Multiple dishes can share one Chef.
+
+
+## Testing
+
+### Server Running Successfully
+![Server Running](screenshots/server-running.png)
+
+### GET All Dishes
+![GET All Dishes](screenshots/get-dishes.png)
+
+### GET Dish by ID
+![GET Dish by ID](screenshots/get-dish-by-id.png)
+
+
+## Security Implementation Answers
+
+### 1. Authentication vs Authorization:
+**Authentication** is verifying who the user is. In our code, this happens in the `protect` middleware when we verify the JWT token and find the user. It answers "Are you who you say you are?"
+
+**Authorization** is determining what the user can do. In our code, this happens in the `authorize` middleware when we check if the user's role (user, admin, manager) is allowed to access a route. It answers "What are you allowed to do?"
+
+### 2. Security (bcrypt):
+We used bcryptjs instead of saving plain text passwords because:
+- If the database is breached, plain text passwords would be exposed
+- bcrypt hashes passwords using a one-way encryption algorithm
+- It includes salting (random data added to the hash) to prevent rainbow table attacks
+- Even if two users have the same password, their hashes will be different
+- The hashing process is intentionally slow to prevent brute force attacks
+
+### 3. JWT Structure:
+When the protect middleware receives a JWT from the client, it:
+1. Extracts the token from the Authorization header (removing the 'Bearer ' prefix)
+2. Verifies the token using the JWT_SECRET to ensure it hasn't been tampered with
+3. Decodes the payload to get the user ID and role
+4. Fetches the user from the database using the ID (excluding the password)
+5. Attaches the user object to the request (req.user) for use in subsequent middleware
+6. If any step fails, it returns a 401 Unauthorized error

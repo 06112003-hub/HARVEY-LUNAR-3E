@@ -32,8 +32,9 @@ const updateDish = async (req, res) => {
     try {
         const updatedDish = await Dish.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
+        runValidators: true
     });
-        if (!dish) return res.status(404).json({ message: 'Dish not found' });
+        if (!updatedDish) return res.status(404).json({ message: 'Dish not found' });
         res.status(200).json(dish);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -43,7 +44,7 @@ const updateDish = async (req, res) => {
 const deleteDish = async (req, res) => {
     try {
         const deletedDish = await Dish.findByIdAndDelete(req.params.id);
-        if (!dish) return res.status(404).json({ message: 'Dish not found' });
+        if (!deleteDish) return res.status(404).json({ message: 'Dish not found' });
         res.status(200).json({ message: 'Dish deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
