@@ -1,4 +1,4 @@
-# RESTful API Activity - Joel Pariño
+# RESTful API Activity - Harvey Lunar
 
 ## Best Practices Implementation
 
